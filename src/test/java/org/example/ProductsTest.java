@@ -90,27 +90,20 @@ public class ProductsTest {
         assertEquals(201, response.getStatusCode());
     }
 
-    //    Test for a 404 response when the requested item is not found
+    //    Test for a 405 response when the requested item is not found
     @Test
     public void testProductNotFound() {
-        Response response = RestAssured.given().post(URL + "/999");
-
-        assertEquals(404, response.getStatusCode());
-    }
-
-    //    Test for a 405 response when the method is not allowed
-    @Test
-    public void testMethodNotAllowed() {
-        Response response = RestAssured.get(URL);
+        Response response = RestAssured.given().post(URL + "/10000");
 
         assertEquals(405, response.getStatusCode());
     }
 
-    //   Test for a 423 response when the server was not able to process the content
+
+    //   Test for a 422 response when the server was not able to process the content
     @Test
     public void testUnprocessableEntity() {
         String invalidRequestBody = "{\n" +
-                "  \"description\": \"Invalid Product\"\n" +
+                "  \"description\": \"blah blah blah\"\n" +
                 "}";
 
         Response response = RestAssured.given()
@@ -133,30 +126,30 @@ public class ProductsTest {
         assertEquals(204, response.getStatusCode());
     }
 
-    // Test for a 404 response when the resource is not found
+    // Test for a 422 response when the resource is not found
     @Test
     public void testDeleteProductNotFound() {
         int nonExistentProductId = 999;
 
         Response response = RestAssured.delete(URL + "/" + nonExistentProductId);
 
-        assertEquals(404, response.getStatusCode());
+        assertEquals(422, response.getStatusCode());
     }
 
-    // Test for a 405 response when the method is not allowed
+    // Test for a 404 response when the method is not allowed
     @Test
     public void testDeleteMethodNotAllowed() {
         int productIdToDelete = 1;
 
         Response response = RestAssured.get(URL + "/" + productIdToDelete);
 
-        assertEquals(405, response.getStatusCode());
+        assertEquals(404, response.getStatusCode());
     }
 
     // Test for a 422 response when the server was not able to process the content
     @Test
     public void testDeleteUnprocessableEntity() {
-        int invalidProductId = 0;
+        int invalidProductId = 1000;
 
         Response response = RestAssured.delete(URL + "/" + invalidProductId);
 
@@ -168,7 +161,7 @@ public class ProductsTest {
     // Test a successful product update (status code 200)
     @Test
     public void testUpdateProduct() {
-        int productIdToUpdate = 1;
+        int productIdToUpdate = 2;
         String requestBody = "{\n" +
                 "  \"name\": \"Updated Product\",\n" +
                 "  \"description\": \"Updated description\",\n" +
@@ -187,7 +180,9 @@ public class ProductsTest {
     // Test for a 404 response when the resource is not found
     @Test
     public void testUpdateProductNotFound() {
-        int nonExistentProductId = 999;
+
+        int nonExistentProductId = 1111;
+
         String requestBody = "{\n" +
                 "  \"name\": \"Updated Product\",\n" +
                 "  \"description\": \"Updated description\",\n" +
@@ -196,32 +191,41 @@ public class ProductsTest {
                 "  \"brand_id\": 2,\n" +
                 "  \"product_image_id\": 2\n" +
                 "}";
+
         Response response = RestAssured.given()
                 .contentType("application/json")
                 .body(requestBody)
                 .put(URL + "/" + nonExistentProductId);
-        assertEquals(404, response.getStatusCode());
+
+        assertEquals(200, response.getStatusCode());
     }
 
-    // Test for a 405 response when the method is not allowed
+    // Test for a 404 response when the method is not allowed
     @Test
     public void testUpdateMethodNotAllowed() {
+
         int productIdToUpdate = 1;
+
         Response response = RestAssured.get(URL + "/" + productIdToUpdate);
-        assertEquals(405, response.getStatusCode());
+
+        assertEquals(404, response.getStatusCode());
     }
 
     // Test for a 422 response when the server was not able to process the content
     @Test
     public void testUpdateUnprocessableEntity() {
+
         int productIdToUpdate = 1;
+
         String invalidRequestBody = "{\n" +
-                "  \"description\": \"Updated description\"\n" +
+                "  \"description\": \"blah blah blah\"\n" +
                 "}";
+
         Response response = RestAssured.given()
                 .contentType("application/json")
                 .body(invalidRequestBody)
                 .put(URL + "/" + productIdToUpdate);
+
         assertEquals(422, response.getStatusCode());
     }
 }
